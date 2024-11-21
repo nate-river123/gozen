@@ -3,6 +3,7 @@ from flask_cors import CORS
 from io import BytesIO
 import base64
 from PIL import Image, ImageDraw, ImageFont
+from api_service import make_post_request
 
 app = Flask(__name__)
 CORS(app)
@@ -27,6 +28,8 @@ def create_image(text, size=(400, 200), background="white"):
 def generate_logo():
     text = request.json.get('text', 'Default Logo')
     logo = create_image(text, size=(300, 100))
+     # Make the POST request via the service
+    response = api_service.post_data(endpoint, data, headers)
     return jsonify({"logo": logo})
 
 @app.route('/api/banner', methods=['POST'])
