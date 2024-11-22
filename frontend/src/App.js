@@ -58,7 +58,7 @@ const Card = ({ imgSrc, title, navigateTo }) => {
 const HomePage = () => (
   <main className="main">
     <h1>
-      Design <span className="highlight">anything</span> like a pro
+      Effortless Editing, Stunning Results
     </h1>
     <div className="cards">
       {/* <Card imgSrc="path-to-remove-bg.jpg" title="Remove Background" /> */}
