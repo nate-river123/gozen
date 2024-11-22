@@ -1,38 +1,256 @@
-.App {
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.app {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.logo {
+  font-size: 24px;
+  font-weight: bold;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.nav a {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.start-btn {
+  padding: 10px 20px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.main {
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Centers content vertically */
+  align-items: center; /* Centers content horizontally */
+  min-height: calc(
+    100vh - 100px
+  ); /* Ensures the main content fills the viewport */
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.highlight {
+  color: #0056ff;
+}
+
+.cards {
+  display: flex;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  justify-content: center; /* Centers the grid horizontally */
+  align-items: center; /* Centers items vertically in each cell */
+  margin-top: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  background-color: #fff;
+  border: 4px solid #0b0b0b;
+  border-radius: 15px;
+  /* padding: 30px; */
+  width: 250px;
+  height: 250px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  border-color: #00f556;
+}
+
+.card-img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+.card h3 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 14px;
+  color: #666;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers horizontally */
+  justify-content: flex-start; /* Aligns content to the top */
+  padding-top: 50px; /* Adds space from the top */
+  height: 100vh; /* Full viewport height */
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  justify-content: center; /* Centers the form horizontally */
+  align-items: center; /* Aligns inputs and button vertically */
+  gap: 20px; /* Adds space between all elements */
+}
+
+.form-group {
+  flex: 1 1 200px; /* Flexible width for responsiveness */
+  min-width: 200px; /* Ensures inputs don’t shrink too small */
+  display: flex;
+  flex-direction: column; /* Ensures label stays above input */
+  gap: 5px; /* Adds space between label and input */
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+input {
+  width: 100%; /* Full width within the form group */
+  height: 40px; /* Matches the button height */
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box; /* Includes padding in width */
+}
+
+.submit-button {
+  background-color: #4caf50;
+  color: #fff;
+  width: 150px; /* Set button width */
+  height: 40px; /* Matches input height */
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* Adds space between inputs and button */
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Loading video container */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.loading-video {
+  width: 500px; /* Adjust the video size */
+  height: 500px;
+}
+
+/* Grid layout for the images */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 40px;
+  margin-top: 50px;
+}
+
+.image-container {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+/* Images */
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect: Scale up the image slightly */
+.image-container:hover .image {
+  transform: scale(1.05);
+}
+
+/* Overlay for the translucent background */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Translucent black */
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 8px;
+}
+
+/* Show the overlay on hover */
+.image-container:hover .overlay {
+  opacity: 1;
+}
+
+/* Download button text and icon */
+.download-text {
   color: white;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  justify-content: center; /* Center content inside the overlay */
 }
 
-.App-link {
-  color: #61dafb;
+/* Style the download icon */
+.download-icon {
+  font-size: 20px;
+  color: white; /* Match the text color */
+  transition: transform 0.3s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Add hover effect to icon */
+.image-container:hover .download-icon {
+  transform: scale(1.2); /* Slightly enlarge the icon on hover */
 }

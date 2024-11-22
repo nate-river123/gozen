@@ -1,40 +1,103 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from io import BytesIO
-import base64
-from PIL import Image, ImageDraw, ImageFont
+import requests
+from config import STABLECOG_URL, AUTH_TOKEN, LOGO_DIMENSIONS, BANNER_DIMENSIONS, MODEL_MAP  # Import models
 
 app = Flask(__name__)
 CORS(app)
 
-def create_image(text, size=(400, 200), background="white"):
-    image = Image.new("RGB", size, color=background)
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.load_default()
-    
-    # Get text size using textbbox() instead of textsize()
-    bbox = draw.textbbox((0, 0), text, font=font)
-    w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    
-    draw.text(((size[0]-w)/2, (size[1]-h)/2), text, fill="black", font=font)
-    
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-    buffer.seek(0)
-    return base64.b64encode(buffer.read()).decode()
+
+def generate_image_response(prompt, width, height):
+    """
+    Handles the StableCog API call and returns URLs based on the provided prompt, size, and model.
+
+    Args:
+        prompt (str): The AI prompt describing the image.
+        width (int): The width of the image.
+        height (int): The height of the image.
+
+    Returns:
+        dict: A dictionary containing the list of image URLs.
+    """
+    headers = {
+        "Authorization": f"Bearer {AUTH_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "prompt": prompt,
+        "model_id": MODEL_MAP["Stable Diffusion 3"],  # Default to FLUX.1 if not specified
+        "num_outputs": 3,
+        "width": width,
+        "height": height
+    }
+
+    try:
+        response = requests.post(STABLECOG_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        return extract_image_urls(response.json())
+    except requests.RequestException as e:
+        # Log error and return empty URLs in case of failure
+        print(f"Error during StableCog API call: {e}")
+        return {"urls": []}
+
+
+def extract_image_urls(response_data):
+    """
+    Extracts image URLs from the StableCog API response.
+
+    Args:
+        response_data (dict): The response object from the StableCog API.
+
+    Returns:
+        dict: A dictionary containing the list of URLs.
+    """
+    try:
+        outputs = response_data.get("outputs", [])
+        urls = [output.get("url") for output in outputs if output.get("url")]
+        # if urls:
+        #     urls = urls * 3
+        return {"urls": urls}
+    except Exception:
+        return {"urls": []}
+
 
 @app.route('/api/logo', methods=['POST'])
 def generate_logo():
-    text = request.json.get('text', 'Default Logo')
-    logo = create_image(text, size=(300, 100))
-    return jsonify({"logo": logo})
+    """
+    Generate a logo based on the brand name and best-selling item.
+    """
+    data = request.json
+    brand_name = data.get('brand_name', 'Default Brand')
+    best_seller_item = data.get('best_seller_item', 'Default Item')
+
+    # Construct the prompt
+    prompt = f"Create a logo for the brand '{brand_name}' featuring its name and its best-selling food item: '{best_seller_item}'."
+
+    # Call the helper function with dimensions from config
+    result = generate_image_response(prompt, **LOGO_DIMENSIONS)
+
+    return jsonify(result)
+
 
 @app.route('/api/banner', methods=['POST'])
 def generate_banner():
-    text = request.json.get('text', 'Default Banner')
-    banner = create_image(text, size=(800, 400))
-    return jsonify({"banner": banner})
+    """
+    Generate a banner based on the brand name, tagline, and offer.
+    """
+    data = request.json
+    brand_name = data.get('brand_name', 'Default Brand')
+    tagline = data.get('tagline', 'Default Tagline')
+    offer = data.get('offer', 'Default Offer')
+
+    # Construct the prompt
+    prompt = f"Banner for the brand '{brand_name}', with tagline: '{tagline}' and offer: '{offer}'."
+
+    # Call the helper function with dimensions from config
+    result = generate_image_response(prompt, **BANNER_DIMENSIONS)
+
+    return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
-
