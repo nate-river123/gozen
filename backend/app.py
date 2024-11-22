@@ -160,6 +160,7 @@ def upload_ad_banner():
     # Check for form data
     brand_name = request.form.get("brand_name")
     discount = request.form.get("discount")
+    discount_on = request.form.get("discount_on")
     file = request.files.get("image")
 
     if not brand_name or not discount or not file:
@@ -170,6 +171,17 @@ def upload_ad_banner():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(file_path)
+        _, extension = os.path.splitext(filename)
+        extension = extension.lower().lstrip(".")
+        # Define a mapping of extensions to MIME types
+        mime_types = {
+            "png": "image/png",
+            "jpeg": "image/jpeg",
+            "jpg": "image/jpeg",
+        }
+
+        # Get the MIME type or return None if the extension is not found
+        content_type = mime_types.get(extension, None)
 
         try:
             # Use DarkroomClient to get an upload URL
@@ -180,7 +192,7 @@ def upload_ad_banner():
                 response = requests.put(
                     urls.upload_url,
                     data=image_file,
-                    headers={"Content-Type": "image/png"},
+                    headers={"Content-Type": content_type},
                 )
 
             if response.status_code == 200:
@@ -202,6 +214,7 @@ def upload_ad_banner():
                         "discount": int(discount),
                         "min_order_amount": 800000,
                         "max_discount_amount": 36000,
+                        "discount_info": discount_on,
                     },
                 }
 
