@@ -136,7 +136,7 @@ def generate_logo():
 
     return jsonify(result)
 
-@app.route('/api/banner', methods=['POST'])
+@app.route('/api/poster', methods=['POST'])
 def generate_banner():
     """
     Generate a banner based on the brand name, tagline, and offer.

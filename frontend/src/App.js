@@ -35,7 +35,7 @@ const Header = () => {
         onClick={() => navigate("/")} // Navigate to the homepage on click
         style={{ cursor: "pointer" }} // Add pointer cursor for better UX
       >
-        GoZen
+        GoPix
       </div>
     </header>
   );

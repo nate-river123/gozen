@@ -6,7 +6,7 @@ AUTH_TOKEN = "sc-6e8433aa4c1a85968764872b214fe94ac88ae4c014bf8c662cca859f38def9a
 
 # Image dimensions
 LOGO_DIMENSIONS = {"width": 1024, "height": 1024}  # Square logo
-BANNER_DIMENSIONS = {"width": 1024, "height": 682}  # 3:2 aspect ratio banner
+BANNER_DIMENSIONS = {"width": 1024, "height": 1024}  # 3:2 aspect ratio banner
 
 # Model IDs
 MODEL_MAP = {

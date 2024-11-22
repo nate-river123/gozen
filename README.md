@@ -1,9 +1,10 @@
-# gozen
+# gopix
 
-Gozen: Branding and Growth tool for GoFood Merchants to start, run and flourish in their online businesses
+GoPix: Branding and Growth tool for GoFood Merchants to start, run and flourish in their online businesses
 
-Gozen supports following features:
+GoPix supports following features:
 
-SKU Image Enchancer
 Logo Generation
 Banner Creator
+Ad Campaign Creator
+Background Remover
