@@ -18,7 +18,10 @@ const App = () => {
           <Route path="/social-posters" element={<SocialPoster />} />
           <Route path="/logo-maker" element={<LogoMakerPage />} />
           <Route path="/ad-banner" element={<AdBannerPage />} />
-          <Route path="/background-remover" element={<BackgroundRemoverPage />} />
+          <Route
+            path="/background-remover"
+            element={<BackgroundRemoverPage />}
+          />
         </Routes>
       </div>
     </Router>
@@ -275,6 +278,7 @@ const SocialPoster = () => {
 const AdBannerPage = () => {
   const [brandName, setBrandName] = useState("");
   const [discount, setDiscount] = useState("");
+  const [discountOn, setDiscountOn] = useState("");
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [bannerUrls, setBannerUrls] = useState([]); // For generated banners
@@ -291,6 +295,7 @@ const AdBannerPage = () => {
     formData.append("brand_name", brandName);
     formData.append("discount", discount);
     formData.append("image", image);
+    formData.append("discount_on", discountOn);
 
     try {
       const response = await fetch("http://localhost:5001/api/ad-banner", {
@@ -334,6 +339,17 @@ const AdBannerPage = () => {
             name="discount"
             value={discount}
             onChange={(e) => setDiscount(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="discountOn">Discounted Item:</label>
+          <input
+            type="number"
+            id="discountOn"
+            name="discountOn"
+            value={discountOn}
+            onChange={(e) => setDiscountOn(e.target.value)}
             required
           />
         </div>
@@ -418,7 +434,11 @@ const BackgroundRemoverPage = () => {
       {resultUrl && (
         <div className="result-container">
           <h2>Background Removed Image:</h2>
-          <img src={resultUrl} alt="Background Removed" className="result-image" />
+          <img
+            src={resultUrl}
+            alt="Background Removed"
+            className="result-image"
+          />
         </div>
       )}
     </div>
