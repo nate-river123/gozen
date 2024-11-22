@@ -75,11 +75,11 @@ const HomePage = () => (
         title="AI Social Posters"
         navigateTo="/social-posters"
       />
-      <Card
+      {/* <Card
         imgSrc="https://i.postimg.cc/MpVb92VP/Screenshot-2024-11-22-at-2-21-56-AM.png"
         title="Ad Banner"
         navigateTo="/ad-banner"
-      />
+      /> */}
       <Card
         imgSrc="https://a.storyblok.com/f/160496/1472x981/9bf40ad4ff/bg-removal-slider-v2artboard-1-copy.png"
         title="Background Remover"
