@@ -11,17 +11,32 @@ const App = () => {
   return (
     <Router>
       <div className="app">
-        <header className="header">
-          <div className="logo">GoZen</div>
-        </header>
+        <Header />
         <Routes>
           {/* Set up Routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/social-posters" element={<RemoveBackgroundPage />} />
+          <Route path="/social-posters" element={<SocialPoster />} />
           <Route path="/logo-maker" element={<LogoMakerPage />} />
+          <Route path="/ad-banner" element={<AdBannerPage />} />
         </Routes>
       </div>
     </Router>
+  );
+};
+
+const Header = () => {
+  const navigate = useNavigate();
+
+  return (
+    <header className="header">
+      <div
+        className="logo"
+        onClick={() => navigate("/")} // Navigate to the homepage on click
+        style={{ cursor: "pointer" }} // Add pointer cursor for better UX
+      >
+        GoZen
+      </div>
+    </header>
   );
 };
 
@@ -56,6 +71,11 @@ const HomePage = () => (
         title="Social Posters"
         navigateTo="/social-posters"
       />
+      <Card
+        imgSrc="https://i.postimg.cc/MpVb92VP/Screenshot-2024-11-22-at-2-21-56-AM.png"
+        title="Ad Banner"
+        navigateTo="/ad-banner"
+      />
     </div>
   </main>
 );
@@ -70,7 +90,7 @@ const LogoMakerPage = () => {
     e.preventDefault();
     setIsLoading(true); // Set loading state to true
 
-    // await sleep(3000); // Simulate a 3 second delay
+    // await sleep(20000); // Simulate a 3 second delay
 
     const requestBody = {
       brand_name: brandName,
@@ -108,32 +128,6 @@ const LogoMakerPage = () => {
     }
   };
 
-  const downloadImage = (imageUrl) => {
-    // Create a temporary anchor element to download the image
-    fetch(imageUrl, {
-      mode: "no-cors",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.blob(); // Convert the response to a Blob
-      })
-      .then((blob) => {
-        const url = URL.createObjectURL(blob); // Create a temporary URL for the Blob
-        const a = document.createElement("a"); // Create a link element
-        a.href = url; // Set the href to the Blob URL
-        a.download = "downloaded_image"; // Set the download filename
-        document.body.appendChild(a); // Append the link to the document
-        a.click(); // Trigger the download
-        document.body.removeChild(a); // Clean up the link element
-        URL.revokeObjectURL(url); // Revoke the Blob URL to free up memory
-      })
-      .catch((error) => {
-        console.error("Error downloading image:", error);
-      });
-  };
-
   return (
     <div className="page">
       <h1>Logo Maker</h1>
@@ -166,67 +160,226 @@ const LogoMakerPage = () => {
       </form>
 
       {/* Show loading video when isLoading is true */}
-      {isLoading && (
-        <div className="loading-container">
-          <video
-            className="loading-video"
-            width="500"
-            height="500"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            <source
-              src="/videos/loading.mp4" // Replace with your actual video URL
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      )}
-
-      {/* Display images in a grid */}
-      <div className="image-grid">
-        {imageUrls.map((url, index) => (
-          <div
-            key={index}
-            className="image-container"
-            onClick={() => downloadImage(url)}
-          >
-            <img
-              src={url}
-              alt={`Generated logo ${index + 1}`}
-              className="image"
-            />
-            <div className="overlay">
-              <span className="download-text">
-                Download <i className="download-icon">⬇️</i>
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      {isLoading && <LoadingComponent />}
+      <DisplayImageGrid imageUrls={imageUrls} />
     </div>
   );
 };
 
-const RemoveBackgroundPage = () => (
-  <div className="page">
-    <h1>Remove Background</h1>
-    <form>
-      <div className="form-group">
-        <label htmlFor="imageUrl">Image URL:</label>
-        <input type="url" id="imageUrl" name="imageUrl" required />
+const SocialPoster = () => {
+  const [brandName, setbrandName] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [offer, setOffer] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // To manage loading state
+  const [imageUrls, setImageUrls] = useState([]); // State to store image URLs
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true); // Set loading state to true
+
+    // await sleep(20000); // Simulate a 3 second delay
+
+    const requestBody = {
+      brand_name: brandName,
+      tagline: tagline,
+      offer: offer,
+    };
+
+    // Simulate an API call (replace with your actual API call)
+    try {
+      const response = await fetch("http://localhost:5001/api/poster", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const result = await response.json();
+
+      console.log("API Response:", result);
+
+      // Assuming the API returns {urls: []}
+      if (result.urls) {
+        setImageUrls(result.urls); // Update state with image URLs
+      }
+    } catch (error) {
+      // const urls = [
+      //   "https://b.stablecog.com/2685ab26-dffb-4c10-9e10-b6ffb4932cd5.jpeg",
+      //   "https://b.stablecog.com/2685ab26-dffb-4c10-9e10-b6ffb4932cd5.jpeg",
+      //   "https://b.stablecog.com/2685ab26-dffb-4c10-9e10-b6ffb4932cd5.jpeg",
+      // ];
+      // setImageUrls(urls);
+      console.error("API Error:", error);
+    } finally {
+      setIsLoading(false); // Set loading state to false after the API call completes
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Social Poster</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="brandName">Brand Name:</label>
+          <input
+            type="text"
+            id="brandName"
+            name="brandName"
+            value={brandName}
+            onChange={(e) => setbrandName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="tagline">Tagline:</label>
+          <input
+            type="text"
+            id="tagline"
+            name="tagline"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="offer">Offer:</label>
+          <input
+            type="text"
+            id="offer"
+            name="offer"
+            value={offer}
+            onChange={(e) => setOffer(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Generate Poster
+        </button>
+      </form>
+
+      {/* Show loading video when isLoading is true */}
+      {isLoading && <LoadingComponent />}
+      <DisplayImageGrid imageUrls={imageUrls} />
+    </div>
+  );
+};
+
+// Add new AdBannerPage
+const AdBannerPage = () => {
+  const [brandName, setBrandName] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [bannerUrls, setBannerUrls] = useState([]); // For generated banners
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("brand_name", brandName);
+    formData.append("discount", discount);
+    formData.append("image", image);
+
+    try {
+      const response = await fetch("http://localhost:5001/api/ad-banner", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (result.urls) {
+        setBannerUrls(result.urls);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Ad Banner Maker</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="brandName">Brand Name:</label>
+          <input
+            type="text"
+            id="brandName"
+            name="brandName"
+            value={brandName}
+            onChange={(e) => setBrandName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="discount">Discount Percentage:</label>
+          <input
+            type="number"
+            id="discount"
+            name="discount"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="image">Upload Image:</label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Generate Banner
+        </button>
+      </form>
+
+      {isLoading && <LoadingComponent />}
+      <DisplayImageGrid imageUrls={bannerUrls} />
+    </div>
+  );
+};
+
+const LoadingComponent = () => (
+  <div className="loading-container">
+    <video
+      className="loading-video"
+      width="500"
+      height="500"
+      autoPlay
+      loop
+      muted
+      playsInline
+    >
+      <source
+        src="/videos/loading.mp4" // Replace with your actual video URL
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+);
+
+const DisplayImageGrid = ({ imageUrls }) => (
+  <div className="image-grid">
+    {imageUrls.map((url, index) => (
+      <div key={index} className="image-container">
+        <img src={url} alt={`Generated logo ${index + 1}`} className="image" />
       </div>
-      <div className="form-group">
-        <label htmlFor="imageSize">Image Size:</label>
-        <input type="text" id="imageSize" name="imageSize" />
-      </div>
-      <button type="submit" className="submit-button">
-        Submit
-      </button>
-    </form>
+    ))}
   </div>
 );
 

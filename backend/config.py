@@ -19,3 +19,20 @@ MODEL_MAP = {
     "22h Diffusion": "fc06f6ab-ed14-4186-a7c0-aaec288d4f38",
     "Waifu Diffusion": "f7f3d973-ac6f-4a7a-9db8-e89e4fba03a9"
 }
+
+PARALLEL_CALLS = 2
+
+# File Upload Configuration
+UPLOAD_FOLDER = "./uploads"  # Folder for storing uploaded files
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}  # Allowed file types for uploads
+
+# Darkroom Configuration
+DARKROOM_BASE_URL = "http://integration-darkroom-internal.golabs.io"  # Darkroom API Base URL
+DARKROOM_APP_ID = "662fffe1-bbf0-4a95-baf9-680a1f810c1d"  # Application ID for Darkroom
+
+# KV Creation Configuration
+KV_BASE_URL = "http://localhost:8080"  # KV Creation API Base URL
+KV_HEADERS = {
+    "Host": "silk-route-integration.campaign-manager-service.server.golabs.io",
+    "Content-Type": "application/json",
+}
