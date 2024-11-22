@@ -16,14 +16,15 @@ from config import (
     KV_HEADERS,
     PARALLEL_CALLS,
 )
-import base64
-import os
 from io import BytesIO
-
 from darkroom_client import DarkroomClient, DarkroomConfig
 from kv_creation import KVCreationClient
+from rembg import remove
 from PIL import Image, ImageDraw, ImageFont
 from werkzeug.utils import secure_filename
+import base64
+import os
+import io
 
 app = Flask(__name__)
 CORS(app)
@@ -228,6 +229,33 @@ def upload_ad_banner():
             return jsonify({"error": str(e)}), 500
 
     return jsonify({"error": "Invalid file type"}), 400
+
+@app.route('/api/remove-bg', methods=['POST'])
+def remove_bg():
+    try:
+        # Check if the file is provided
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+
+        image_file = request.files['image']
+        if not image_file:
+            return jsonify({"error": "Empty image file"}), 400
+
+        input_image = Image.open(image_file)
+        print(f"Image received: {input_image.format}, {input_image.size}, {input_image.mode}")
+        
+        # Perform background removal
+        output_image = remove(input_image)
+
+        # Convert to base64 string or save to a static folder
+        buffered = io.BytesIO()
+        output_image.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return jsonify({"url": f"data:image/png;base64,{img_str}"})
+    except Exception as e:
+        print(f"Error: {e}")  # Log the error to console
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     config = DarkroomConfig(

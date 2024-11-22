@@ -18,6 +18,7 @@ const App = () => {
           <Route path="/social-posters" element={<SocialPoster />} />
           <Route path="/logo-maker" element={<LogoMakerPage />} />
           <Route path="/ad-banner" element={<AdBannerPage />} />
+          <Route path="/background-remover" element={<BackgroundRemoverPage />} />
         </Routes>
       </div>
     </Router>
@@ -63,18 +64,23 @@ const HomePage = () => (
       {/* <Card imgSrc="path-to-remove-bg.jpg" title="Remove Background" /> */}
       <Card
         imgSrc="https://img.freepik.com/premium-vector/burger-restaurant-logo-vector-template_621660-2613.jpg?w=1480"
-        title="Logo Maker"
+        title="AI Logo Maker"
         navigateTo="/logo-maker"
       />
       <Card
         imgSrc="https://mir-s3-cdn-cf.behance.net/projects/404/99fcc8210697073.6716372a5972d.jpg"
-        title="Social Posters"
+        title="AI Social Posters"
         navigateTo="/social-posters"
       />
       <Card
         imgSrc="https://i.postimg.cc/MpVb92VP/Screenshot-2024-11-22-at-2-21-56-AM.png"
         title="Ad Banner"
         navigateTo="/ad-banner"
+      />
+      <Card
+        imgSrc="https://a.storyblok.com/f/160496/1472x981/9bf40ad4ff/bg-removal-slider-v2artboard-1-copy.png"
+        title="Background Remover"
+        navigateTo="/background-remover"
       />
     </div>
   </main>
@@ -349,6 +355,72 @@ const AdBannerPage = () => {
 
       {isLoading && <LoadingComponent />}
       <DisplayImageGrid imageUrls={bannerUrls} />
+    </div>
+  );
+};
+
+const BackgroundRemoverPage = () => {
+  const [image, setImage] = useState(null);
+  const [resultUrl, setResultUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    try {
+      const response = await fetch("http://localhost:5001/api/remove-bg", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (result.url) {
+        setResultUrl(result.url);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>Background Remover</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="image">Upload Image:</label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Remove Background
+        </button>
+      </form>
+
+      {isLoading && <LoadingComponent />}
+      {resultUrl && (
+        <div className="result-container">
+          <h2>Background Removed Image:</h2>
+          <img src={resultUrl} alt="Background Removed" className="result-image" />
+        </div>
+      )}
     </div>
   );
 };
